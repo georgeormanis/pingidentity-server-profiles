@@ -28,4 +28,8 @@ if [ $? -eq 0 ]; then
 else
     echo "ERROR: Could not fetch version ${JAR_VERSION}."
     exit 1
+<<<<<<< HEAD
 fi
+=======
+fi
+>>>>>>> eb5e7552d82faf14495a10a15c6d04da04bdddf7
