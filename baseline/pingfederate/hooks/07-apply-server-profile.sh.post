@@ -3,7 +3,6 @@
 # Hook: 07.post - Pull MFA Adapter Artifact
 # ---------------------------------------------------------
 
-# Using variables from Ping Identity DevOps documentation
 DEPLOY_DIR="${SERVER_ROOT_DIR}/server/default/deploy"
 JAR_VERSION="${MFA_ADAPTER_VERSION:-1.3.2}"
 NEW_JAR="pf-pingone-mfa-adapter-${JAR_VERSION}.jar"
@@ -12,7 +11,6 @@ ARTIFACT_URL="${ARTIFACT_SERVER}/${NEW_JAR}"
 echo ""
 echo "--- Starting 07.post: Downloading MFA Adapter v${JAR_VERSION} ---"
 
-# Ensure the deploy directory exists (just in case)
 mkdir -p "${DEPLOY_DIR}"
 
 # 1. CLEANUP: Remove any other versions to avoid conflicts
@@ -21,12 +19,14 @@ rm -f "${DEPLOY_DIR}"/pf-pingone-mfa-adapter-*.jar
 
 # 2. DOWNLOAD: Pull from your Mac (ARTIFACT_SERVER)
 echo "Fetching from: ${ARTIFACT_URL}"
-curl -k -f -sS "${ARTIFACT_URL}" -o "${DEPLOY_DIR}/${NEW_JAR}"
 
-if [ $? -eq 0 ]; then
+# -f fails on HTTP errors, -k ignores SSL warnings, -sS hides progress but shows errors
+if curl -f -k -sS "${ARTIFACT_URL}" -o "${DEPLOY_DIR}/${NEW_JAR}"; then
     echo "Successfully placed ${NEW_JAR} in ${DEPLOY_DIR}"
 else
     echo "ERROR: Download failed. Check if ${ARTIFACT_SERVER} is reachable."
+    exit 1
 fi
+
 echo "--- 07.post complete ---"
 echo ""
